@@ -8,13 +8,11 @@ USER root
 RUN apk update && \
     apk add --no-cache python3 py3-pip
 
-# Upgrade pip, create virtual environment and install g4f
-RUN python3 -m ensurepip && \
-    pip3 install --no-cache --upgrade pip setuptools wheel && \
-    python3 -m venv /opt/venv && \
+# Create a virtual environment and install g4f
+RUN python3 -m venv /opt/venv && \
     /opt/venv/bin/pip install --no-cache-dir g4f
 
-# Make sure venv binaries are on the PATH
+# Add virtualenv binaries to PATH
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Switch back to the n8n (node) user
