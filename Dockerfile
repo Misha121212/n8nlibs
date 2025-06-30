@@ -1,19 +1,34 @@
-# Use the official n8n image as base
-FROM docker.n8n.io/n8nio/n8n:latest
+FROM n8nio/n8n
 
-# Switch to root to install dependencies
+# Switch to root to install packages
 USER root
 
-# Install Python3, pip3, nano
-RUN apk update && \
-    apk add --no-cache python3 py3-pip nano
+# Install Python and required build tools
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    ffmpeg \
+    build-base \
+    python3-dev \
+    libffi-dev \
+    openssl-dev \
+    cargo \
+    portaudio-dev \
+    musl-dev \
+    g++ \
+    pkgconfig
 
-# Create a virtual environment and install g4f
-RUN python3 -m venv /opt/venv && \
-    /opt/venv/bin/pip install --no-cache-dir g4f
+# Upgrade pip and create venv
+RUN python3 -m ensurepip && \
+    pip3 install --no-cache --upgrade pip setuptools wheel && \
+    python3 -m venv /opt/venv
 
-# Ensure the virtualenv's binaries are on PATH
+# Add venv to path
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Return to the n8n (node) user
+# Install Python packages
+RUN pip install --no-cache-dir \
+    g4f 
+
+# Switch back to node user
 USER node
